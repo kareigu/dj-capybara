@@ -53,8 +53,8 @@ pub async fn register_commands(ctx: &Context, _ready: &Ready) {
 }
 
 pub async fn handle_commands(ctx: &Context, command: CommandInteraction) {
-  let name = command.data.name.clone();
-  let user = command.user.clone();
+  let name = &command.data.name;
+  let user = &command.user;
   match command
     .create_response(
       &ctx.http,
@@ -68,7 +68,7 @@ pub async fn handle_commands(ctx: &Context, command: CommandInteraction) {
     Err(e) => error!("Error deferring command {}: {}", name, e),
   }
 
-  let result = cmd::execute(name.as_str(), ctx, &command);
+  let result = cmd::execute(name, ctx, &command);
 
   match tokio::time::timeout(COMMAND_TIMEOUT, result).await {
     Ok(result) => {
