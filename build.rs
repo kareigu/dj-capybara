@@ -27,12 +27,12 @@ fn main() {
   .expect("invalid utf8 data received from rustc");
 
   rustc_version_output.split('\n').for_each(|line| {
-    if line.starts_with("host: ") {
-      println!("cargo:rustc-env=RUSTC_HOST_TRIPLE={}", &line[6..]);
-    } else if line.starts_with("release: ") {
-      println!("cargo:rustc-env=RUSTC_SEMVER={}", &line[9..]);
-    } else if line.starts_with("LLVM version: ") {
-      println!("cargo:rustc-env=RUSTC_LLVM_VERSION={}", &line[14..]);
+    if let Some(host) = line.strip_prefix("host: ") {
+      println!("cargo:rustc-env=RUSTC_HOST_TRIPLE={}", host);
+    } else if let Some(version) = line.strip_prefix("release: ") {
+      println!("cargo:rustc-env=RUSTC_SEMVER={}", version);
+    } else if let Some(version) = line.strip_prefix("LLVM version: ") {
+      println!("cargo:rustc-env=RUSTC_LLVM_VERSION={}", version);
     }
   });
 }
