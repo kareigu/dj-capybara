@@ -8,7 +8,6 @@ use serenity::prelude::Mutex;
 use songbird::{
   input::{Compose, YoutubeDl},
   tracks::TrackHandle,
-  typemap::TypeMapKey,
 };
 use std::{sync::Arc, time::Duration};
 use tracing::error;
@@ -77,24 +76,18 @@ pub struct SongMetadata {
   pub url: Option<String>,
 }
 
-pub struct SongMetadataKey;
-
-impl TypeMapKey for SongMetadataKey {
-  type Value = SongMetadata;
-}
-
 impl SongMetadata {
-  pub async fn from_source(source: &mut YoutubeDl) -> Self {
+  pub async fn from_source(source: &mut YoutubeDl<'_>) -> Arc<Self> {
     let metadata = match source.aux_metadata().await {
       Ok(m) => m,
       Err(e) => {
         error!("Error getting metadata: {}", e);
-        return Self {
+        return Arc::new(Self {
           title: "N/A".to_string(),
           thumbnail: placeholder_img(),
           duration: Duration::default(),
           url: None,
-        };
+        });
       }
     };
 
@@ -106,24 +99,20 @@ impl SongMetadata {
 
     let url = metadata.source_url.clone();
 
-    Self {
+    Arc::new(Self {
       title,
       thumbnail,
       duration,
       url,
-    }
+    })
   }
 
-  pub async fn from_handle(handle: &TrackHandle) -> SongMetadata {
-    let data = handle.typemap().read().await;
-    data
-      .get::<SongMetadataKey>()
-      .expect("Metadata not found")
-      .clone()
+  pub async fn from_handle(handle: &TrackHandle) -> Arc<SongMetadata> {
+    handle.data::<SongMetadata>().clone()
   }
 }
 
-pub fn get_source(client: crate::constants::HttpClient, param: String) -> YoutubeDl {
+pub fn get_source<'a>(client: crate::constants::HttpClient, param: String) -> YoutubeDl<'a> {
   if param.contains("https://") {
     YoutubeDl::new(client, param)
   } else {

@@ -79,7 +79,7 @@ impl Command for Pause {
               CreateEmbed::new()
                 .title("Paused")
                 .colour(EMBED_COLOUR)
-                .image(metadata.thumbnail)
+                .image(&metadata.thumbnail)
                 .fields(vec![
                   ("Track", title, true),
                   ("Time", format!("{} / {}", current_time, duration), true),

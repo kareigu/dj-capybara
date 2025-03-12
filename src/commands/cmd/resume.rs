@@ -79,7 +79,7 @@ impl Command for Resume {
               CreateEmbed::new()
                 .title("Resumed")
                 .colour(EMBED_COLOUR)
-                .image(metadata.thumbnail)
+                .image(&metadata.thumbnail)
                 .fields(vec![
                   ("Track", title, true),
                   ("Time", format!("{} / {}", current_time, duration), true),

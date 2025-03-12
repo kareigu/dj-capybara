@@ -3,8 +3,8 @@ use std::sync::Arc;
 use crate::commands::{
   cmd::Command,
   playback::{
-    SongMetadata, SongMetadataKey, VOIPData, format_duration, format_duration_live,
-    get_queue_length_and_duration, get_source,
+    SongMetadata, VOIPData, format_duration, format_duration_live, get_queue_length_and_duration,
+    get_source,
   },
   utils::remove_md_characters,
   utils::text_response,
@@ -23,7 +23,9 @@ use serenity::{
   model::id::{ChannelId, GuildId},
   prelude::Mutex,
 };
-use songbird::{Call, EventContext, EventHandler, Songbird, TrackEvent, events::Event};
+use songbird::{
+  Call, EventContext, EventHandler, Songbird, TrackEvent, events::Event, tracks::Track,
+};
 use tracing::error;
 
 pub struct Play;
@@ -98,11 +100,8 @@ impl Command for Play {
 
     let mut handler = handler_lock.lock().await;
 
-    let handle = handler.enqueue_input(source.into()).await;
-    {
-      let mut data = handle.typemap().write().await;
-      data.insert::<SongMetadataKey>(metadata.clone());
-    }
+    let track = Track::new_with_data(source.into(), metadata.clone());
+    let handle = handler.enqueue(track).await;
     match handle.add_event(
       Event::Track(TrackEvent::Error),
       SongError {
@@ -154,7 +153,7 @@ impl Command for Play {
           .embed(
             CreateEmbed::new()
               .title(embed_title)
-              .image(metadata.thumbnail)
+              .image(&metadata.thumbnail)
               .author(CreateEmbedAuthor::new(user_nick).icon_url(command.user.face()))
               .colour(EMBED_COLOUR)
               .fields(vec![
@@ -237,7 +236,7 @@ impl EventHandler for SongStart {
     let (count, duration) = get_queue_length_and_duration(&handler.queue().current_queue()).await;
 
     drop(handler);
-    let url = metadata.url.clone().unwrap_or_default();
+    let url = &metadata.url.clone().unwrap_or_default();
 
     match self
       .channel_id
@@ -248,7 +247,7 @@ impl EventHandler for SongStart {
             CreateEmbed::new()
               .title("Playing")
               .colour(EMBED_COLOUR)
-              .image(metadata.thumbnail)
+              .image(&metadata.thumbnail)
               .fields(vec![
                 ("Track", remove_md_characters(metadata.title.clone()), true),
                 (
