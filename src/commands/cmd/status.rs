@@ -1,11 +1,10 @@
 use crate::{commands::cmd::Command, constants};
 use constants::EMBED_COLOUR;
 use serenity::{
-  async_trait,
+  Error, async_trait,
   builder::{CreateCommand, CreateEmbed, EditInteractionResponse},
   client::Context,
   model::application::CommandInteraction,
-  Error,
 };
 use tracing::error;
 
@@ -17,6 +16,13 @@ impl Command for Status {
     let yt_dlp_version = get_runtime_info("yt-dlp", ["--version"]);
     let uname = get_runtime_info("uname", ["-or"]);
     let uptime = get_runtime_info("uptime", []);
+
+    let ping = {
+      let start_time = std::time::Instant::now();
+      _ = ctx.http.get_gateway().await;
+      let end_time = std::time::Instant::now();
+      format!("{}ms", end_time.duration_since(start_time).as_millis(),)
+    };
 
     command
       .edit_response(
@@ -31,7 +37,8 @@ impl Command for Status {
               ("LLVM", constants::LLVM_VERSION, true),
               ("yt-dlp", &yt_dlp_version, true),
               ("Commit", constants::GIT_DESC, true),
-              ("uname", &uname, true),
+              ("Ping", &ping, true),
+              ("uname", &uname, false),
               ("Host", constants::HOST_TRIPLE, false),
               ("Uptime", &uptime, false),
               ("Build", constants::BUILD_TIMESTAMP, false),
