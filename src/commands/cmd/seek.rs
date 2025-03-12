@@ -1,10 +1,10 @@
 use crate::commands::playback::{SongMetadata, VOIPData};
-use crate::commands::{text_response, Command};
+use crate::commands::{cmd::Command, utils::text_response};
+use serenity::Error;
 use serenity::async_trait;
 use serenity::builder::{CreateCommand, CreateCommandOption};
 use serenity::client::Context;
 use serenity::model::application::{CommandInteraction, CommandOptionType, ResolvedValue};
-use serenity::Error;
 use tracing::error;
 
 pub struct Seek;

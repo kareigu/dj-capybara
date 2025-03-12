@@ -1,6 +1,7 @@
-use crate::commands::{text_response, utils::remove_md_characters, Command};
+use crate::commands::{cmd::Command, utils::remove_md_characters, utils::text_response};
 use crate::constants::EMBED_COLOUR;
 use serenity::{
+  Error,
   all::ResolvedValue,
   async_trait,
   builder::{
@@ -8,7 +9,6 @@ use serenity::{
   },
   client::Context,
   model::application::{CommandInteraction, CommandOptionType},
-  Error,
 };
 use tracing::error;
 

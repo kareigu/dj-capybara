@@ -1,9 +1,9 @@
-use crate::commands::{playback::VOIPData, text_response, Command};
+use crate::commands::{cmd::Command, playback::VOIPData, utils::text_response};
+use serenity::Error;
 use serenity::async_trait;
 use serenity::builder::CreateCommand;
 use serenity::client::Context;
 use serenity::model::application::CommandInteraction;
-use serenity::Error;
 use tracing::error;
 
 pub struct Stop;

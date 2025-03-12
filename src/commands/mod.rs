@@ -1,29 +1,16 @@
 use crate::config::ConfigStorage;
-use crate::constants::EMBED_COLOUR;
-use serenity::builder::CreateEmbed;
 use serenity::builder::CreateInteractionResponseMessage;
-use serenity::builder::EditInteractionResponse;
 use serenity::model::application::CommandInteraction;
 use serenity::model::prelude::Ready;
 use serenity::prelude::Context;
-use serenity::Error;
-use serenity::{async_trait, builder::CreateCommand};
-use std::future::Future;
-use std::pin::Pin;
 use tracing::{error, info};
 
 mod cmd;
 mod playback;
 mod utils;
+use utils::text_response;
 
 static COMMAND_TIMEOUT: tokio::time::Duration = tokio::time::Duration::from_secs(10);
-
-#[async_trait]
-trait Command {
-  async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error>;
-  fn info() -> CreateCommand;
-  const NAME: &'static str;
-}
 
 pub async fn register_commands(ctx: &Context, _ready: &Ready) {
   let config_lock = {
@@ -35,7 +22,7 @@ pub async fn register_commands(ctx: &Context, _ready: &Ready) {
   };
 
   if let Some(guild) = config_lock.guild_id {
-    let commands = guild.set_commands(&ctx.http, command_list()).await;
+    let commands = guild.set_commands(&ctx.http, cmd::command_list()).await;
 
     match commands {
       Ok(c) => {
@@ -49,7 +36,7 @@ pub async fn register_commands(ctx: &Context, _ready: &Ready) {
       Err(e) => panic!("Couldn't set application commands: {:#?}", e),
     }
   } else {
-    let commands = ctx.http.create_global_commands(&command_list()).await;
+    let commands = ctx.http.create_global_commands(&cmd::command_list()).await;
 
     match commands {
       Ok(c) => {
@@ -63,25 +50,6 @@ pub async fn register_commands(ctx: &Context, _ready: &Ready) {
       Err(e) => panic!("Couldn't set global application commands: {:#?}", e),
     }
   }
-}
-
-fn command_list() -> Vec<CreateCommand> {
-  vec![
-    cmd::Join::info(),
-    cmd::Leave::info(),
-    cmd::Play::info(),
-    cmd::Capybara::info(),
-    cmd::Seek::info(),
-    cmd::Skip::info(),
-    cmd::Queue::info(),
-    cmd::Me::info(),
-    cmd::Info::info(),
-    cmd::Stop::info(),
-    cmd::Eval::info(),
-    cmd::Pause::info(),
-    cmd::Resume::info(),
-    cmd::Status::info(),
-  ]
 }
 
 pub async fn handle_commands(ctx: &Context, command: CommandInteraction) {
@@ -100,23 +68,7 @@ pub async fn handle_commands(ctx: &Context, command: CommandInteraction) {
     Err(e) => error!("Error deferring command {}: {}", name, e),
   }
 
-  let result = match name.as_str() {
-    _ if name == cmd::Join::NAME => cmd::Join::execute(ctx, &command),
-    _ if name == cmd::Leave::NAME => cmd::Leave::execute(ctx, &command),
-    _ if name == cmd::Play::NAME => cmd::Play::execute(ctx, &command),
-    _ if name == cmd::Seek::NAME => cmd::Seek::execute(ctx, &command),
-    _ if name == cmd::Skip::NAME => cmd::Skip::execute(ctx, &command),
-    _ if name == cmd::Queue::NAME => cmd::Queue::execute(ctx, &command),
-    _ if name == cmd::Stop::NAME => cmd::Stop::execute(ctx, &command),
-    _ if name == cmd::Capybara::NAME => cmd::Capybara::execute(ctx, &command),
-    _ if name == cmd::Me::NAME => cmd::Me::execute(ctx, &command),
-    _ if name == cmd::Info::NAME => cmd::Info::execute(ctx, &command),
-    _ if name == cmd::Eval::NAME => cmd::Eval::execute(ctx, &command),
-    _ if name == cmd::Pause::NAME => cmd::Pause::execute(ctx, &command),
-    _ if name == cmd::Resume::NAME => cmd::Resume::execute(ctx, &command),
-    _ if name == cmd::Status::NAME => cmd::Status::execute(ctx, &command),
-    _ => Box::pin(text_response(ctx, &command, "Invalid command")),
-  };
+  let result = cmd::execute(name.as_str(), ctx, &command);
 
   match tokio::time::timeout(COMMAND_TIMEOUT, result).await {
     Ok(result) => {
@@ -145,25 +97,5 @@ pub async fn handle_commands(ctx: &Context, command: CommandInteraction) {
         .await
         .unwrap_or(());
     }
-  }
-}
-
-pub async fn text_response<D>(
-  ctx: &Context,
-  command: &CommandInteraction,
-  text: D,
-) -> Result<(), Error>
-where
-  std::string::String: From<D>,
-{
-  match command
-    .edit_response(
-      &ctx.http,
-      EditInteractionResponse::new().embed(CreateEmbed::new().title(text).colour(EMBED_COLOUR)),
-    )
-    .await
-  {
-    Ok(_) => Ok(()),
-    Err(e) => Err(e),
   }
 }

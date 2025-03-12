@@ -1,12 +1,13 @@
+use crate::commands::cmd::Command;
 use crate::commands::{
-  playback::{format_duration_live, SongMetadata, VOIPData},
-  text_response, Command,
+  playback::{SongMetadata, VOIPData, format_duration_live},
+  utils::text_response,
 };
 use crate::constants::EMBED_COLOUR;
+use serenity::Error;
 use serenity::builder::CreateCommand;
 use serenity::client::Context;
 use serenity::model::application::CommandInteraction;
-use serenity::Error;
 use serenity::{
   async_trait,
   builder::{CreateEmbed, EditInteractionResponse},

@@ -1,16 +1,17 @@
 use std::sync::Arc;
 
 use crate::commands::{
+  cmd::Command,
   playback::{
-    format_duration, format_duration_live, get_queue_length_and_duration, get_source, SongMetadata,
-    SongMetadataKey, VOIPData,
+    SongMetadata, SongMetadataKey, VOIPData, format_duration, format_duration_live,
+    get_queue_length_and_duration, get_source,
   },
-  text_response,
   utils::remove_md_characters,
-  Command,
+  utils::text_response,
 };
 use crate::constants::EMBED_COLOUR;
 use serenity::{
+  Error,
   all::ResolvedValue,
   async_trait,
   builder::{
@@ -21,9 +22,8 @@ use serenity::{
   model::application::{CommandInteraction, CommandOptionType},
   model::id::{ChannelId, GuildId},
   prelude::Mutex,
-  Error,
 };
-use songbird::{events::Event, Call, EventContext, EventHandler, Songbird, TrackEvent};
+use songbird::{Call, EventContext, EventHandler, Songbird, TrackEvent, events::Event};
 use tracing::error;
 
 pub struct Play;

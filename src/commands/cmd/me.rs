@@ -1,10 +1,10 @@
-use crate::commands::{text_response, Command};
+use crate::commands::{cmd::Command, utils::text_response};
 use crate::constants::EMBED_COLOUR;
+use serenity::Error;
 use serenity::async_trait;
 use serenity::builder::{CreateCommand, CreateEmbed, CreateEmbedFooter, EditInteractionResponse};
 use serenity::client::Context;
 use serenity::model::application::CommandInteraction;
-use serenity::Error;
 
 pub struct Me;
 

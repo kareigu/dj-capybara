@@ -1,11 +1,10 @@
-use crate::{commands::Command, constants};
+use crate::{commands::cmd::Command, constants};
 use constants::EMBED_COLOUR;
 use serenity::{
-  async_trait,
+  Error, async_trait,
   builder::{CreateCommand, CreateEmbed, EditInteractionResponse},
   client::Context,
   model::application::CommandInteraction,
-  Error,
 };
 
 pub struct Status;

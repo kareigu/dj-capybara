@@ -1,4 +1,5 @@
-use crate::commands::{text_response, Command};
+use crate::commands::utils::text_response;
+use crate::commands::cmd::Command;
 use serenity::async_trait;
 use serenity::builder::{CreateCommand};
 use serenity::client::Context;

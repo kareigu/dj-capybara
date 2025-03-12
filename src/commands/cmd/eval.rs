@@ -1,12 +1,13 @@
+use crate::commands::cmd::Command;
 use crate::commands::utils::remove_md_characters;
-use crate::commands::{text_response, Command};
+use crate::commands::utils::text_response;
 use crate::constants::EMBED_COLOUR;
 use evalexpr::eval;
+use serenity::Error;
 use serenity::async_trait;
 use serenity::builder::{CreateCommand, CreateCommandOption, CreateEmbed, EditInteractionResponse};
 use serenity::client::Context;
 use serenity::model::application::{CommandInteraction, CommandOptionType, ResolvedValue};
-use serenity::Error;
 use tracing::error;
 
 pub struct Eval;
