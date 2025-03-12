@@ -101,12 +101,10 @@ impl Command for Info {
     }
   }
 
-  fn name() -> &'static str {
-    "info"
-  }
+  const NAME: &'static str = "info";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name())
+    CreateCommand::new(Self::NAME)
       .description("View info on your own or someone else's Discord user")
       .add_option(
         CreateCommandOption::new(

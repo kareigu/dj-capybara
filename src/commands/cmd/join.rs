@@ -41,11 +41,9 @@ impl Command for Join {
     }
   }
 
-  fn name() -> &'static str {
-    "join"
-  }
+  const NAME: &'static str = "join";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("Join current voice channel")
+    CreateCommand::new(Self::NAME).description("Join current voice channel")
   }
 }

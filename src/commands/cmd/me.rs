@@ -33,11 +33,9 @@ impl Command for Me {
     }
   }
 
-  fn name() -> &'static str {
-    "me"
-  }
+  const NAME: &'static str = "me";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("🍊")
+    CreateCommand::new(Self::NAME).description("🍊")
   }
 }

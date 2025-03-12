@@ -12,11 +12,9 @@ impl Command for Template {
   async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error> {
   }
 
-  fn name() -> &'static str {
-    "template"
-  }
+  const NAME: &'static str = "template";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name())
+    CreateCommand::new(Self::NAME)
   }
 }

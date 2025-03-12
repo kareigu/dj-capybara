@@ -88,11 +88,9 @@ impl Command for Skip {
     }
   }
 
-  fn name() -> &'static str {
-    "skip"
-  }
+  const NAME: &'static str = "skip";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("Skip the currently playing song")
+    CreateCommand::new(Self::NAME).description("Skip the currently playing song")
   }
 }

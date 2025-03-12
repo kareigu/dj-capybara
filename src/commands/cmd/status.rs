@@ -35,11 +35,9 @@ impl Command for Status {
     Ok(())
   }
 
-  fn name() -> &'static str {
-    "status"
-  }
+  const NAME: &'static str = "status";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("display capybara status")
+    CreateCommand::new(Self::NAME).description("display capybara status")
   }
 }

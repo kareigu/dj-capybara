@@ -118,12 +118,10 @@ impl Command for Queue {
     }
   }
 
-  fn name() -> &'static str {
-    "queue"
-  }
+  const NAME: &'static str = "queue";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("View currently queued songs")
+    CreateCommand::new(Self::NAME).description("View currently queued songs")
   }
 }
 

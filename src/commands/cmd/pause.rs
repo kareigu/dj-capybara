@@ -94,11 +94,9 @@ impl Command for Pause {
     }
   }
 
-  fn name() -> &'static str {
-    "pause"
-  }
+  const NAME: &'static str = "pause";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("Pause the currently playing song")
+    CreateCommand::new(Self::NAME).description("Pause the currently playing song")
   }
 }

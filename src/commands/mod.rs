@@ -8,6 +8,8 @@ use serenity::model::prelude::Ready;
 use serenity::prelude::Context;
 use serenity::Error;
 use serenity::{async_trait, builder::CreateCommand};
+use std::future::Future;
+use std::pin::Pin;
 use tracing::{error, info};
 
 mod cmd;
@@ -20,7 +22,7 @@ static COMMAND_TIMEOUT: tokio::time::Duration = tokio::time::Duration::from_secs
 trait Command {
   async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error>;
   fn info() -> CreateCommand;
-  fn name() -> &'static str;
+  const NAME: &'static str;
 }
 
 pub async fn register_commands(ctx: &Context, _ready: &Ready) {
@@ -99,20 +101,20 @@ pub async fn handle_commands(ctx: &Context, command: CommandInteraction) {
   }
 
   let result = match name.as_str() {
-    _ if name == cmd::Join::name() => cmd::Join::execute(ctx, &command),
-    _ if name == cmd::Leave::name() => cmd::Leave::execute(ctx, &command),
-    _ if name == cmd::Play::name() => cmd::Play::execute(ctx, &command),
-    _ if name == cmd::Seek::name() => cmd::Seek::execute(ctx, &command),
-    _ if name == cmd::Skip::name() => cmd::Skip::execute(ctx, &command),
-    _ if name == cmd::Queue::name() => cmd::Queue::execute(ctx, &command),
-    _ if name == cmd::Stop::name() => cmd::Stop::execute(ctx, &command),
-    _ if name == cmd::Capybara::name() => cmd::Capybara::execute(ctx, &command),
-    _ if name == cmd::Me::name() => cmd::Me::execute(ctx, &command),
-    _ if name == cmd::Info::name() => cmd::Info::execute(ctx, &command),
-    _ if name == cmd::Eval::name() => cmd::Eval::execute(ctx, &command),
-    _ if name == cmd::Pause::name() => cmd::Pause::execute(ctx, &command),
-    _ if name == cmd::Resume::name() => cmd::Resume::execute(ctx, &command),
-    _ if name == cmd::Status::name() => cmd::Status::execute(ctx, &command),
+    _ if name == cmd::Join::NAME => cmd::Join::execute(ctx, &command),
+    _ if name == cmd::Leave::NAME => cmd::Leave::execute(ctx, &command),
+    _ if name == cmd::Play::NAME => cmd::Play::execute(ctx, &command),
+    _ if name == cmd::Seek::NAME => cmd::Seek::execute(ctx, &command),
+    _ if name == cmd::Skip::NAME => cmd::Skip::execute(ctx, &command),
+    _ if name == cmd::Queue::NAME => cmd::Queue::execute(ctx, &command),
+    _ if name == cmd::Stop::NAME => cmd::Stop::execute(ctx, &command),
+    _ if name == cmd::Capybara::NAME => cmd::Capybara::execute(ctx, &command),
+    _ if name == cmd::Me::NAME => cmd::Me::execute(ctx, &command),
+    _ if name == cmd::Info::NAME => cmd::Info::execute(ctx, &command),
+    _ if name == cmd::Eval::NAME => cmd::Eval::execute(ctx, &command),
+    _ if name == cmd::Pause::NAME => cmd::Pause::execute(ctx, &command),
+    _ if name == cmd::Resume::NAME => cmd::Resume::execute(ctx, &command),
+    _ if name == cmd::Status::NAME => cmd::Status::execute(ctx, &command),
     _ => Box::pin(text_response(ctx, &command, "Invalid command")),
   };
 

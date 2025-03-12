@@ -45,11 +45,9 @@ impl Command for Capybara {
     }
   }
 
-  fn name() -> &'static str {
-    "capybara"
-  }
+  const NAME: &'static str = "capybara";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("Post today's capybara gif")
+    CreateCommand::new(Self::NAME).description("Post today's capybara gif")
   }
 }

@@ -64,12 +64,10 @@ impl Command for Eval {
     }
   }
 
-  fn name() -> &'static str {
-    "eval"
-  }
+  const NAME: &'static str = "eval";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name())
+    CreateCommand::new(Self::NAME)
       .description("Evaluate an expression")
       .add_option(
         CreateCommandOption::new(

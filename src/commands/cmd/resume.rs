@@ -94,11 +94,9 @@ impl Command for Resume {
     }
   }
 
-  fn name() -> &'static str {
-    "resume"
-  }
+  const NAME: &'static str = "resume";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("Resume the currently paused song")
+    CreateCommand::new(Self::NAME).description("Resume the currently paused song")
   }
 }

@@ -37,11 +37,9 @@ impl Command for Stop {
     text_response(ctx, command, "Stopped playback and cleared the queue").await
   }
 
-  fn name() -> &'static str {
-    "stop"
-  }
+  const NAME: &'static str = "stop";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("Stop music and clear the queue")
+    CreateCommand::new(Self::NAME).description("Stop music and clear the queue")
   }
 }

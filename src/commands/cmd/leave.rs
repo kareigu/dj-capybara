@@ -45,11 +45,9 @@ impl Command for Leave {
     }
   }
 
-  fn name() -> &'static str {
-    "leave"
-  }
+  const NAME: &'static str = "leave";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name()).description("Leave voice channel")
+    CreateCommand::new(Self::NAME).description("Leave voice channel")
   }
 }

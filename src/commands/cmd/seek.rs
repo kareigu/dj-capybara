@@ -114,12 +114,10 @@ impl Command for Seek {
     }
   }
 
-  fn name() -> &'static str {
-    "seek"
-  }
+  const NAME: &'static str = "seek";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name())
+    CreateCommand::new(Self::NAME)
       .description("Seek the currently playing song")
       .add_option(
         CreateCommandOption::new(

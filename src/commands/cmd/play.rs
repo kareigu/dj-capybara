@@ -182,12 +182,10 @@ impl Command for Play {
     }
   }
 
-  fn name() -> &'static str {
-    "play"
-  }
+  const NAME: &'static str = "play";
 
   fn info() -> CreateCommand {
-    CreateCommand::new(Self::name())
+    CreateCommand::new(Self::NAME)
       .description("Play a YouTube video or any music/video file")
       .add_option(
         CreateCommandOption::new(
