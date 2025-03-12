@@ -21,35 +21,35 @@ pub async fn register_commands(ctx: &Context, _ready: &Ready) {
       .clone()
   };
 
-  if let Some(guild) = config_lock.guild_id {
-    let commands = guild.set_commands(&ctx.http, cmd::command_list()).await;
-
-    match commands {
-      Ok(c) => {
-        let cmd_list = c.iter().fold("".to_string(), |mut a, c| {
-          let s = format!("{}\n", c.name);
-          a.push_str(&s);
-          a
-        });
-        info!("Added commands for Guild({}):\n{}", guild, cmd_list)
-      }
-      Err(e) => panic!("Couldn't set application commands: {:#?}", e),
-    }
+  let commands = if let Some(guild) = config_lock.guild_id {
+    guild.set_commands(&ctx.http, cmd::command_list()).await
   } else {
-    let commands = ctx.http.create_global_commands(&cmd::command_list()).await;
+    ctx.http.create_global_commands(&cmd::command_list()).await
+  };
 
-    match commands {
-      Ok(c) => {
-        let cmd_list = c.iter().fold("".to_string(), |mut a, c| {
-          let s = format!("{}\n", c.name);
-          a.push_str(&s);
-          a
-        });
+  match commands {
+    Ok(c) => {
+      let cmd_list = c.iter().fold("".to_string(), |mut a, c| {
+        let s = format!("{}\n", c.name);
+        a.push_str(&s);
+        a
+      });
+      if let Some(guild) = config_lock.guild_id {
+        info!("Added commands for Guild({}):\n{}", guild, cmd_list)
+      } else {
         info!("Added global commands:\n{}", cmd_list)
       }
-      Err(e) => panic!("Couldn't set global application commands: {:#?}", e),
     }
-  }
+    Err(e) => panic!(
+      "Couldn't set {} application commands: {:#?}",
+      e,
+      if config_lock.guild_id.is_some() {
+        ""
+      } else {
+        "global"
+      }
+    ),
+  };
 }
 
 pub async fn handle_commands(ctx: &Context, command: CommandInteraction) {
