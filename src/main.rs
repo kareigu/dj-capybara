@@ -52,7 +52,7 @@ async fn main() {
     .await
     .expect("Error creating client");
 
-  if let Err(e) = client.start().await {
+  if let Err(e) = client.start_autosharded().await {
     error!("Client error: {:?}", e)
   }
 }
