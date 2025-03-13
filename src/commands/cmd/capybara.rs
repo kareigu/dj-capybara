@@ -14,40 +14,40 @@ const FILE_PREFIX: &str = "cp_";
 
 #[async_trait]
 impl Command for Capybara {
-  async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error> {
-    let filename = match Local::now().weekday() {
-      Weekday::Mon => "monday",
-      Weekday::Tue => "tuesday",
-      Weekday::Wed => "wednesday",
-      Weekday::Thu => "thursday",
-      Weekday::Fri => "friday",
-      Weekday::Sat => "saturday",
-      Weekday::Sun => "sunday",
-    };
-    match command
-      .edit_response(
-        &ctx.http,
-        EditInteractionResponse::new().embed(
-          CreateEmbed::new()
-            .image(format!(
-              "{url}{prefix}{filename}.gif",
-              url = FILE_URL,
-              prefix = FILE_PREFIX,
-              filename = filename
-            ))
-            .colour(EMBED_COLOUR),
-        ),
-      )
-      .await
-    {
-      Ok(_) => Ok(()),
-      Err(e) => Err(e),
+    async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error> {
+        let filename = match Local::now().weekday() {
+            Weekday::Mon => "monday",
+            Weekday::Tue => "tuesday",
+            Weekday::Wed => "wednesday",
+            Weekday::Thu => "thursday",
+            Weekday::Fri => "friday",
+            Weekday::Sat => "saturday",
+            Weekday::Sun => "sunday",
+        };
+        match command
+            .edit_response(
+                &ctx.http,
+                EditInteractionResponse::new().embed(
+                    CreateEmbed::new()
+                        .image(format!(
+                            "{url}{prefix}{filename}.gif",
+                            url = FILE_URL,
+                            prefix = FILE_PREFIX,
+                            filename = filename
+                        ))
+                        .colour(EMBED_COLOUR),
+                ),
+            )
+            .await
+        {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e),
+        }
     }
-  }
 
-  const NAME: &'static str = "capybara";
+    const NAME: &'static str = "capybara";
 
-  fn info() -> CreateCommand {
-    CreateCommand::new(Self::NAME).description("Post today's capybara gif")
-  }
+    fn info() -> CreateCommand {
+        CreateCommand::new(Self::NAME).description("Post today's capybara gif")
+    }
 }
