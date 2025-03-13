@@ -1,6 +1,10 @@
 pub use reqwest::Client as HttpClient;
-use serenity::model::Colour;
+use serenity::model::{Colour, id::ShardId};
 use serenity::prelude::TypeMapKey;
+use std::collections::HashMap;
+use std::sync::{Arc};
+use tokio::sync::RwLock;
+use std::time::Duration;
 
 pub enum ErrorCodes {
   ConfigFileError = 10,
@@ -16,6 +20,14 @@ pub struct HttpKey;
 
 impl TypeMapKey for HttpKey {
   type Value = HttpClient;
+}
+
+pub struct ShardLatencyKey;
+
+pub type ShardLatencyMap = HashMap<ShardId, Duration>;
+
+impl TypeMapKey for ShardLatencyKey {
+  type Value = Arc<RwLock<ShardLatencyMap>>;
 }
 
 pub const PACKAGE_VERSION: &str = env!("CARGO_PKG_VERSION");

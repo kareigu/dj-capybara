@@ -1,5 +1,5 @@
 use crate::{commands::cmd::Command, constants};
-use constants::EMBED_COLOUR;
+use constants::{EMBED_COLOUR, ShardLatencyKey};
 use serenity::{
   Error, async_trait,
   builder::{CreateCommand, CreateEmbed, EditInteractionResponse},
@@ -18,10 +18,15 @@ impl Command for Status {
     let uptime = get_runtime_info("uptime", []);
 
     let ping = {
-      let start_time = std::time::Instant::now();
-      _ = ctx.http.get_gateway().await;
-      let end_time = std::time::Instant::now();
-      format!("{}ms", end_time.duration_since(start_time).as_millis(),)
+      let data = ctx.data.read().await;
+      let latency_map = data
+        .get::<ShardLatencyKey>()
+        .expect("No latency_map in global data");
+      let latency_map_lock = latency_map.read().await;
+
+      latency_map_lock
+        .get(&ctx.shard_id)
+        .map_or(String::from("N/A"), |o| format!("{}ms", o.as_millis()))
     };
 
     command

@@ -4,6 +4,7 @@ use serenity::gateway::ActivityData;
 use serenity::model::{application::Interaction, prelude::*};
 use songbird::SerenityInit;
 use std::sync::Arc;
+use tokio::sync::RwLock;
 use tracing::{error, info};
 
 mod commands;
@@ -43,14 +44,33 @@ async fn main() {
 
   info!("Intents: {:?}", intents);
 
+  let latency_map = Arc::new(RwLock::new(constants::ShardLatencyMap::new()));
+
   let mut client = Client::builder(config.token.clone(), intents)
     .event_handler(Handler)
     .application_id(config.application_id)
     .register_songbird()
     .type_map_insert::<constants::HttpKey>(constants::HttpClient::new())
     .type_map_insert::<config::ConfigStorage>(Arc::new(config))
+    .type_map_insert::<constants::ShardLatencyKey>(latency_map.clone())
     .await
     .expect("Error creating client");
+
+  let manager = client.shard_manager.clone();
+
+  tokio::spawn(async move {
+    loop {
+      tokio::time::sleep(std::time::Duration::from_secs(30)).await;
+      let runners_lock = manager.runners.lock().await;
+      let mut latency_lock = latency_map.write().await;
+
+      for (id, runner) in runners_lock.iter() {
+        if let Some(latency) = runner.latency {
+          latency_lock.insert(*id, latency);
+        }
+      }
+    }
+  });
 
   if let Err(e) = client.start_autosharded().await {
     error!("Client error: {:?}", e)
