@@ -32,7 +32,6 @@ RUN apt-get install -y ca-certificates
 RUN apt-get install libopus0
 RUN apt-get install -y --no-install-recommends curl
 RUN apt-get install -y --no-install-recommends python3
-RUN apt-get install -y --no-install-recommends procps
 
 RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
 RUN chmod a+rx /usr/local/bin/yt-dlp

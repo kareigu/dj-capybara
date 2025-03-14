@@ -15,7 +15,24 @@ impl Command for Status {
     async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error> {
         let yt_dlp_version = get_runtime_info("yt-dlp", ["--version"]);
         let uname = get_runtime_info("uname", ["-or"]);
-        let uptime = get_runtime_info("uptime", []);
+        let uptime = {
+            let (delta, start) = constants::uptime().await;
+            let since = {
+                let weeks = delta.num_weeks();
+                let days = delta.num_days() - weeks * 7;
+                let hours = delta.num_hours() - days * 24;
+                let minutes = delta.num_minutes() - hours * 60;
+                let seconds = delta.num_seconds() - minutes * 60;
+                match (weeks, days, hours, minutes, seconds) {
+                    (w, d, h, _, _) if w > 0 => format!("{w} weeks {d} days {h} hours"),
+                    (_, d, h, m, _) if d > 0 => format!("{d} days {h} hours {m} minutes"),
+                    (_, _, h, m, s) if h > 0 => format!("{h} hours {m} minutes {s} seconds"),
+                    (_, _, _, m, s) if m > 0 => format!("{m} minutes {s} seconds"),
+                    (_, _, _, _, s) => format!("{s} seconds"),
+                }
+            };
+            format!("{} ({})", since, start.format("%Y-%m-%d %H:%M:%S"))
+        };
 
         let ping = {
             let data = ctx.data.read().await;

@@ -28,6 +28,7 @@ impl EventHandler for Handler {
         commands::register_commands(&ctx, &ready).await;
 
         info!("{}#{} running", ready.user.name, ready.user.id);
+        _ = constants::uptime().await;
     }
 }
 
