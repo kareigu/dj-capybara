@@ -16,6 +16,7 @@ pub fn placeholder_img() -> String {
 }
 
 pub const EMBED_COLOUR: Colour = Colour::from_rgb(232, 12, 116);
+pub const COMMIT_URL: &str = "https://git.sr.ht/~kareigu/capybotbara/commit/";
 
 pub struct HttpKey;
 

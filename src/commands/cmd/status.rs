@@ -14,6 +14,11 @@ pub struct Status;
 impl Command for Status {
     async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error> {
         let yt_dlp_version = get_runtime_info("yt-dlp", ["--version"]);
+        let commit = format!(
+            "[{1}]({0}{1})",
+            constants::COMMIT_URL,
+            constants::GIT_DESC
+        );
         let uname = get_runtime_info("uname", ["-or"]);
         let uptime = {
             let (delta, start) = constants::uptime().await;
@@ -58,7 +63,7 @@ impl Command for Status {
                             ("Rust", constants::RUST_VERSION, true),
                             ("LLVM", constants::LLVM_VERSION, true),
                             ("yt-dlp", &yt_dlp_version, true),
-                            ("Commit", constants::GIT_DESC, true),
+                            ("Commit", &commit, true),
                             ("Ping", &ping, true),
                             ("uname", &uname, false),
                             ("Host", constants::HOST_TRIPLE, false),
