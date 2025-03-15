@@ -20,9 +20,9 @@ impl Command for Status {
             let since = {
                 let weeks = delta.num_weeks();
                 let days = delta.num_days() - weeks * 7;
-                let hours = delta.num_hours() - days * 24;
-                let minutes = delta.num_minutes() - hours * 60;
-                let seconds = delta.num_seconds() - minutes * 60;
+                let hours = delta.num_hours() - days * 24 - weeks * 7 * 24;
+                let minutes = delta.num_minutes() - hours * 60 - days * 24 * 60;
+                let seconds = delta.num_seconds() - minutes * 60 - hours * 60 * 60;
                 match (weeks, days, hours, minutes, seconds) {
                     (w, d, h, _, _) if w > 0 => format!("{w} weeks {d} days {h} hours"),
                     (_, d, h, m, _) if d > 0 => format!("{d} days {h} hours {m} minutes"),
