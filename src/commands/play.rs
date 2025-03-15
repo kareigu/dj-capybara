@@ -1,15 +1,15 @@
-use std::sync::Arc;
-
-use crate::commands::{
-    cmd::Command,
-    playback::{
-        SongMetadata, VOIPData, format_duration, format_duration_live,
-        get_queue_length_and_duration, get_source,
+use crate::{
+    commands::Command,
+    constants::EMBED_COLOUR,
+    handlers::{
+        playback::{
+            SongMetadata, VOIPData, format_duration, format_duration_live,
+            get_queue_length_and_duration, get_source,
+        },
+        utils::{remove_md_characters, text_response},
     },
-    utils::remove_md_characters,
-    utils::text_response,
+    shared,
 };
-use crate::constants::EMBED_COLOUR;
 use serenity::{
     Error,
     all::ResolvedValue,
@@ -19,13 +19,16 @@ use serenity::{
         CreateEmbedAuthor, CreateEmbedFooter, CreateMessage, EditInteractionResponse,
     },
     client::Context,
-    model::application::{CommandInteraction, CommandOptionType},
-    model::id::{ChannelId, GuildId},
+    model::{
+        application::{CommandInteraction, CommandOptionType},
+        id::{ChannelId, GuildId},
+    },
     prelude::Mutex,
 };
 use songbird::{
     Call, EventContext, EventHandler, Songbird, TrackEvent, events::Event, tracks::Track,
 };
+use std::sync::Arc;
 use tracing::error;
 
 pub struct Play;
@@ -64,7 +67,7 @@ impl Command for Play {
 
         let http_client = {
             let data = ctx.data.read().await;
-            data.get::<crate::constants::HttpKey>()
+            data.get::<shared::HttpKey>()
                 .cloned()
                 .expect("HttpClient did not exist")
         };

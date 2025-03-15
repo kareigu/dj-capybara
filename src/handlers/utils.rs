@@ -1,9 +1,10 @@
 use crate::constants::EMBED_COLOUR;
-use serenity::Error;
-use serenity::builder::CreateEmbed;
-use serenity::builder::EditInteractionResponse;
-use serenity::client::Context;
-use serenity::model::application::CommandInteraction;
+use serenity::{
+    Error,
+    builder::{CreateEmbed, EditInteractionResponse},
+    client::Context,
+    model::application::CommandInteraction,
+};
 
 pub fn remove_md_characters<S>(s: S) -> String
 where

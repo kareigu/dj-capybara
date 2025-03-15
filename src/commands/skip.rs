@@ -1,16 +1,16 @@
-use crate::commands::cmd::Command;
-use crate::commands::{
-    playback::{SongMetadata, VOIPData, format_duration_live},
-    utils::text_response,
+use crate::{
+    commands::Command,
+    constants::EMBED_COLOUR,
+    handlers::{
+        playback::{SongMetadata, VOIPData, format_duration_live},
+        utils::text_response,
+    },
 };
-use crate::constants::EMBED_COLOUR;
-use serenity::Error;
-use serenity::builder::CreateCommand;
-use serenity::client::Context;
-use serenity::model::application::CommandInteraction;
 use serenity::{
-    async_trait,
-    builder::{CreateEmbed, EditInteractionResponse},
+    Error, async_trait,
+    builder::{CreateCommand, CreateEmbed, EditInteractionResponse},
+    client::Context,
+    model::application::CommandInteraction,
 };
 use tracing::error;
 

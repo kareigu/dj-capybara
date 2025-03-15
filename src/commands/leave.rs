@@ -1,10 +1,11 @@
-use crate::commands::utils::text_response;
-use crate::commands::{cmd::Command, playback::VOIPData};
-use serenity::Error;
-use serenity::async_trait;
-use serenity::builder::CreateCommand;
-use serenity::client::Context;
-use serenity::model::application::CommandInteraction;
+use crate::{
+    commands::Command,
+    handlers::{playback::VOIPData, utils::text_response},
+};
+use serenity::{
+    Error, async_trait, builder::CreateCommand, client::Context,
+    model::application::CommandInteraction,
+};
 use tracing::error;
 
 pub struct Leave;

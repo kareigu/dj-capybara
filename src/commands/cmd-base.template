@@ -1,0 +1,18 @@
+use crate::{commands::Command, handlers::utils::text_response};
+use serenity::{
+    Error, async_trait, builder::CreateCommand, client::Context,
+    model::application::CommandInteraction,
+};
+
+pub struct Template;
+
+#[async_trait]
+impl Command for Template {
+    async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error> {}
+
+    const NAME: &'static str = "template";
+
+    fn info() -> CreateCommand {
+        CreateCommand::new(Self::NAME)
+    }
+}

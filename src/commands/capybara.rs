@@ -1,11 +1,11 @@
-use crate::commands::cmd::Command;
-use crate::constants::EMBED_COLOUR;
+use crate::{commands::Command, constants::EMBED_COLOUR};
 use chrono::prelude::*;
-use serenity::Error;
-use serenity::async_trait;
-use serenity::builder::{CreateCommand, CreateEmbed, EditInteractionResponse};
-use serenity::client::Context;
-use serenity::model::application::CommandInteraction;
+use serenity::{
+    Error, async_trait,
+    builder::{CreateCommand, CreateEmbed, EditInteractionResponse},
+    client::Context,
+    model::application::CommandInteraction,
+};
 
 pub struct Capybara;
 

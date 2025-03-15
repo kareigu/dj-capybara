@@ -1,23 +1,23 @@
-use crate::commands::cmd::Command;
-use crate::commands::{
-    playback::{SongMetadata, VOIPData, format_duration_live},
-    utils::text_response,
+use crate::{
+    commands::Command,
+    constants::EMBED_COLOUR,
+    handlers::{
+        playback::{SongMetadata, VOIPData, format_duration_live},
+        utils::text_response,
+    },
 };
-use crate::constants::EMBED_COLOUR;
-use serenity::Error;
-use serenity::builder::CreateCommand;
-use serenity::client::Context;
-use serenity::model::application::CommandInteraction;
 use serenity::{
-    async_trait,
-    builder::{CreateEmbed, EditInteractionResponse},
+    Error, async_trait,
+    builder::{CreateCommand, CreateEmbed, EditInteractionResponse},
+    client::Context,
+    model::application::CommandInteraction,
 };
 use tracing::error;
 
-pub struct Pause;
+pub struct Resume;
 
 #[async_trait]
-impl Command for Pause {
+impl Command for Resume {
     async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error> {
         let voip_data = match VOIPData::from(ctx, command).await {
             Ok(v) => v,
@@ -48,17 +48,17 @@ impl Command for Pause {
         let handler = handler_lock.lock().await;
 
         if handler.queue().is_empty() {
-            return text_response(ctx, command, "Nothing is playing").await;
+            return text_response(ctx, command, "Nothing is paused").await;
         }
         let current = match handler.queue().current() {
             Some(t) => t,
-            None => return text_response(ctx, command, "Nothing is playing").await,
+            None => return text_response(ctx, command, "Nothing is paused").await,
         };
 
-        match current.pause() {
+        match current.play() {
             Err(e) => {
-                error!("Error pausing track: {}", e);
-                text_response(ctx, command, "Could not pause").await
+                error!("Error resuming track: {}", e);
+                text_response(ctx, command, "Could not resume").await
             }
             Ok(_) => {
                 let metadata = SongMetadata::from_handle(&current).await;
@@ -77,7 +77,7 @@ impl Command for Pause {
                         &ctx.http,
                         EditInteractionResponse::new().embed(
                             CreateEmbed::new()
-                                .title("Paused")
+                                .title("Resumed")
                                 .colour(EMBED_COLOUR)
                                 .image(&metadata.thumbnail)
                                 .fields(vec![
@@ -95,9 +95,9 @@ impl Command for Pause {
         }
     }
 
-    const NAME: &'static str = "pause";
+    const NAME: &'static str = "resume";
 
     fn info() -> CreateCommand {
-        CreateCommand::new(Self::NAME).description("Pause the currently playing song")
+        CreateCommand::new(Self::NAME).description("Resume the currently paused song")
     }
 }

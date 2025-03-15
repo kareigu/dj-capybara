@@ -1,5 +1,4 @@
-use crate::{commands::cmd::Command, constants};
-use constants::{EMBED_COLOUR, ShardLatencyKey};
+use crate::{commands::Command, constants, shared};
 use serenity::{
     Error, async_trait,
     builder::{CreateCommand, CreateEmbed, EditInteractionResponse},
@@ -14,14 +13,10 @@ pub struct Status;
 impl Command for Status {
     async fn execute(ctx: &Context, command: &CommandInteraction) -> Result<(), Error> {
         let yt_dlp_version = get_runtime_info("yt-dlp", ["--version"]);
-        let commit = format!(
-            "[{1}]({0}{1})",
-            constants::COMMIT_URL,
-            constants::GIT_DESC
-        );
+        let commit = format!("[{1}]({0}{1})", constants::COMMIT_URL, constants::GIT_DESC);
         let uname = get_runtime_info("uname", ["-or"]);
         let uptime = {
-            let (delta, start) = constants::uptime().await;
+            let (delta, start) = shared::uptime().await;
             let since = {
                 let weeks = delta.num_weeks();
                 let days = delta.num_days() - weeks * 7;
@@ -42,7 +37,7 @@ impl Command for Status {
         let ping = {
             let data = ctx.data.read().await;
             let latency_map = data
-                .get::<ShardLatencyKey>()
+                .get::<shared::ShardLatencyKey>()
                 .expect("No latency_map in global data");
             let latency_map_lock = latency_map.read().await;
 
@@ -56,7 +51,7 @@ impl Command for Status {
                 &ctx.http,
                 EditInteractionResponse::new().embed(
                     CreateEmbed::new()
-                        .colour(EMBED_COLOUR)
+                        .colour(constants::EMBED_COLOUR)
                         .title("Status")
                         .fields([
                             ("Version", constants::PACKAGE_VERSION, true),

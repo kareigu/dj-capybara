@@ -1,16 +1,5 @@
-use crate::constants;
-use serenity::{
-    model::id::{ApplicationId, GuildId},
-    prelude::TypeMapKey,
-};
-use std::sync::Arc;
+use serenity::model::id::{ApplicationId, GuildId};
 use tracing::{error, info};
-
-pub struct ConfigStorage;
-
-impl TypeMapKey for ConfigStorage {
-    type Value = Arc<Config>;
-}
 
 pub struct Config {
     pub token: String,
@@ -23,7 +12,7 @@ pub fn read_config() -> Config {
         Ok(c) => info!("Loaded .env {:?}", c),
         Err(e) => {
             error!("Error {:?}", e);
-            std::process::exit(constants::ErrorCodes::ConfigFileError as i32);
+            std::process::exit(1);
         }
     }
 

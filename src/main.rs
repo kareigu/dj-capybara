@@ -8,8 +8,10 @@ use tokio::sync::RwLock;
 use tracing::{error, info};
 
 mod commands;
+mod handlers;
 mod config;
 mod constants;
+mod shared;
 
 struct Handler;
 
@@ -17,7 +19,7 @@ struct Handler;
 impl EventHandler for Handler {
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::Command(command) = interaction {
-            commands::handle_commands(&ctx, command).await;
+            handlers::handle_commands(&ctx, command).await;
         }
     }
 
@@ -25,10 +27,11 @@ impl EventHandler for Handler {
         let activity = ActivityData::playing("with 🍊");
         ctx.set_activity(Some(activity));
 
-        commands::register_commands(&ctx, &ready).await;
+        handlers::register_commands(&ctx, &ready).await;
 
         info!("{}#{} running", ready.user.name, ready.user.id);
-        _ = constants::uptime().await;
+        // initialise tokio::OnceCell
+        _ = shared::uptime().await;
     }
 }
 
@@ -45,15 +48,15 @@ async fn main() {
 
     info!("Intents: {:?}", intents);
 
-    let latency_map = Arc::new(RwLock::new(constants::ShardLatencyMap::new()));
+    let latency_map = Arc::new(RwLock::new(shared::ShardLatencyMap::new()));
 
     let mut client = Client::builder(config.token.clone(), intents)
         .event_handler(Handler)
         .application_id(config.application_id)
         .register_songbird()
-        .type_map_insert::<constants::HttpKey>(constants::HttpClient::new())
-        .type_map_insert::<config::ConfigStorage>(Arc::new(config))
-        .type_map_insert::<constants::ShardLatencyKey>(latency_map.clone())
+        .type_map_insert::<shared::HttpKey>(shared::HttpClient::new())
+        .type_map_insert::<shared::ConfigStorage>(Arc::new(config))
+        .type_map_insert::<shared::ShardLatencyKey>(latency_map.clone())
         .await
         .expect("Error creating client");
 

@@ -1,18 +1,20 @@
-use crate::commands::{
-    cmd::Command,
-    playback::{
-        SongMetadata, VOIPData, format_duration, format_duration_live,
-        get_queue_length_and_duration,
+use crate::{
+    commands::Command,
+    constants::EMBED_COLOUR,
+    handlers::{
+        playback::{
+            SongMetadata, VOIPData, format_duration, format_duration_live,
+            get_queue_length_and_duration,
+        },
+        utils::{remove_md_characters, text_response},
     },
-    utils::remove_md_characters,
-    utils::text_response,
 };
-use crate::constants::EMBED_COLOUR;
-use serenity::Error;
-use serenity::builder::{CreateCommand, CreateEmbedFooter, EditInteractionResponse};
-use serenity::client::Context;
-use serenity::model::application::CommandInteraction;
-use serenity::{async_trait, builder::CreateEmbed};
+use serenity::{
+    Error, async_trait,
+    builder::{CreateCommand, CreateEmbed, CreateEmbedFooter, EditInteractionResponse},
+    client::Context,
+    model::application::CommandInteraction,
+};
 use songbird::tracks::TrackHandle;
 use std::time::Duration;
 use tracing::error;

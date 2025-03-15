@@ -1,5 +1,8 @@
-use crate::commands::{cmd::Command, utils::remove_md_characters, utils::text_response};
-use crate::constants::EMBED_COLOUR;
+use crate::{
+    commands::Command,
+    constants::EMBED_COLOUR,
+    handlers::utils::{remove_md_characters, text_response},
+};
 use serenity::{
     Error,
     all::ResolvedValue,

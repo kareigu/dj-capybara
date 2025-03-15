@@ -1,10 +1,10 @@
-use crate::constants::placeholder_img;
+use crate::{constants::placeholder_img, shared::HttpClient};
 use regex::Regex;
-use serenity::client::Context;
-use serenity::model::application::CommandInteraction;
-use serenity::model::id::ChannelId;
-use serenity::model::prelude::GuildId;
-use serenity::prelude::Mutex;
+use serenity::{
+    client::Context,
+    model::{application::CommandInteraction, id::ChannelId, prelude::GuildId},
+    prelude::Mutex,
+};
 use songbird::{
     input::{Compose, YoutubeDl},
     tracks::TrackHandle,
@@ -111,7 +111,7 @@ impl SongMetadata {
     }
 }
 
-pub fn get_source<'a>(client: crate::constants::HttpClient, param: String) -> YoutubeDl<'a> {
+pub fn get_source<'a>(client: HttpClient, param: String) -> YoutubeDl<'a> {
     if param.contains("https://") {
         YoutubeDl::new(client, param)
     } else {
